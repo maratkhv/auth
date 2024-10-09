@@ -54,6 +54,10 @@ func (s Storage) GetUser(ctx context.Context, login string) (*models.User, error
 		return nil, err
 	}
 
+	if err := s.cache.SaveUser(u); err != nil {
+		return u, fmt.Errorf("%w: %w", ErrRedis, err)
+	}
+
 	return u, e
 }
 

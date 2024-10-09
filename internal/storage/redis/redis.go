@@ -2,8 +2,9 @@ package redis
 
 import (
 	"auth/internal/models"
+	"bytes"
 	"context"
-	"encoding/json"
+	"encoding/gob"
 	"errors"
 	"time"
 
@@ -26,17 +27,17 @@ func New(addr string) Cache {
 }
 
 func (c *Cache) SaveUser(user *models.User) error {
-	bytes, err := json.Marshal(user)
-	if err != nil {
+	buf := bytes.Buffer{}
+	if err := gob.NewEncoder(&buf).Encode(*user); err != nil {
 		return err
 	}
 
-	return c.c.Set(context.Background(), "user@"+user.Login, bytes, time.Hour).Err()
+	return c.c.Set(context.Background(), "user@"+user.Login, buf.Bytes(), time.Hour).Err()
 }
 
 func (c *Cache) GetUser(login string) (*models.User, error) {
-	bytes := make([]byte, 0)
-	err := c.c.Get(context.Background(), "user@"+login).Scan(&bytes)
+	bs := make([]byte, 0)
+	err := c.c.Get(context.Background(), "user@"+login).Scan(&bs)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			return nil, ErrNotFound
@@ -45,8 +46,8 @@ func (c *Cache) GetUser(login string) (*models.User, error) {
 	}
 
 	var u models.User
-	err = json.Unmarshal(bytes, &u)
-	if err != nil {
+	buf := bytes.NewBuffer(bs)
+	if err := gob.NewDecoder(buf).Decode(&u); err != nil {
 		return nil, err
 	}
 
