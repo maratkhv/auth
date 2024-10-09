@@ -18,10 +18,10 @@ var (
 	ErrRedis = errors.New("redis error")
 )
 
-func MustNew(dbConnStr string, redisPort string) Storage {
+func MustNew(dbConnStr string, redisAddr string) Storage {
 	return Storage{
 		db:    postgres.New(dbConnStr),
-		cache: redis.New(redisPort),
+		cache: redis.New(redisAddr),
 	}
 }
 

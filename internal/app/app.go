@@ -16,7 +16,7 @@ type App struct {
 
 func New(log *slog.Logger, cfg *config.Config) *App {
 
-	storage := strg.MustNew(cfg.ConnString, cfg.Redis.Port)
+	storage := strg.MustNew(cfg.ConnString, cfg.Redis.Addr)
 
 	api := auth.New(log, storage, storage)
 

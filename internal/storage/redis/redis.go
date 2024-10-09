@@ -18,9 +18,10 @@ var (
 	ErrNotFound = errors.New("user not found")
 )
 
-func New(port string) Cache {
+func New(addr string) Cache {
 	return Cache{c: redis.NewClient(&redis.Options{
-		Addr: ":" + port,
+		Addr:       addr,
+		MaxRetries: -1,
 	})}
 }
 

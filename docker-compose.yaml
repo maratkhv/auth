@@ -1,0 +1,65 @@
+services:
+  auth:
+    build:
+      context: .
+      dockerfile: Dockerfile-app
+    ports:
+      - "8082:8082"
+    environment:
+      CONFIG_PATH: "./config/config.yaml"
+    depends_on: 
+      db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+        required: false
+      migrations:
+        condition: service_completed_successfully
+    networks:
+      - app
+
+  db:
+    image: "postgres:alpine"
+    environment:
+      POSTGRES_USER: "auth"
+      POSTGRES_PASSWORD: "strongpwd"
+      POSTGRES_DB: "authdb"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth -d authdb"]
+      interval: 10s
+      timeout: 15s
+    networks:
+      - app
+      - migrations
+
+  redis:
+    image: "redis:alpine"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 10s
+    networks:
+      - app
+
+  migrations:
+    build:
+      context: .
+      dockerfile: Dockerfile-migrations
+    environment:
+      CONFIG_PATH: "./config/config.yaml"
+    depends_on: 
+      db:
+        condition: service_healthy
+    networks:
+      - migrations
+
+networks:
+  app:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
+  migrations:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.2"

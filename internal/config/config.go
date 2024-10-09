@@ -23,7 +23,7 @@ type Config struct {
 }
 
 type redis struct {
-	Port string `yaml:"port" env-default:"6379"`
+	Addr string `yaml:"addr" env-default:"6379"`
 }
 
 type server struct {
