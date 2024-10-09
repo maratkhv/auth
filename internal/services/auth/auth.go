@@ -43,10 +43,10 @@ func (a *Auth) Login(ctx context.Context, login string, password string) (token 
 	usr, err := a.usrProvider.GetUser(ctx, login)
 	if err != nil {
 		if !errors.Is(err, storage.ErrRedis) {
-			a.log.Error("error getting user", slog.Any("error", err))
-			return "", 0, err
+			a.log.Error("failed to get user", slog.Any("error", err))
+			return "", 0, fmt.Errorf("failed to login user: %w", err)
 		} else {
-			a.log.Warn("redis error", slog.Any("error", err))
+			a.log.Warn("error while getting user", slog.Any("error", err))
 		}
 	}
 
@@ -75,8 +75,12 @@ func (a *Auth) Register(ctx context.Context, login string, password string) (id 
 
 	usr, err := a.usrSaver.SaveUser(ctx, login, passHash)
 	if err != nil {
-		a.log.Error("failed to save user", slog.Any("error", err))
-		return 0, fmt.Errorf("failed to register user: %w", err)
+		if !errors.Is(err, storage.ErrRedis) {
+			a.log.Error("failed to save user", slog.Any("error", err))
+			return 0, fmt.Errorf("failed to register user: %w", err)
+		} else {
+			a.log.Warn("non critical error while saving user", slog.Any("error", err))
+		}
 	}
 
 	return usr.Id, nil

@@ -32,7 +32,7 @@ func (s Storage) SaveUser(ctx context.Context, login string, passHash []byte) (*
 	}
 
 	if err := s.cache.SaveUser(u); err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrRedis, err)
+		return u, fmt.Errorf("%w: %w", ErrRedis, err)
 	}
 	return u, nil
 }
