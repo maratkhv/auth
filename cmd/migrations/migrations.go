@@ -14,7 +14,7 @@ import (
 
 func main() {
 
-	connStr := config.MustLoad().ConnString
+	connStr := config.MustLoad(nil).ConnString
 
 	logger := initLogger()
 

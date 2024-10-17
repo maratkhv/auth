@@ -32,7 +32,33 @@ type server struct {
 	Timeout time.Duration `yaml:"timeout" env-default:"15m"`
 }
 
-func MustLoad() *Config {
+type Options struct {
+	// WithPath must be a path to a config file.
+	// It will overwrite env variable.
+	// If WithPath is empty then env variable CONFIG_PATH
+	// will be used
+	WithPath string
+}
+
+func MustLoad(opts *Options) *Config {
+	var configPath string
+
+	if opts != nil && opts.WithPath != "" {
+		configPath = opts.WithPath
+	} else {
+		configPath = envConfigPath()
+	}
+
+	var cfg Config
+
+	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
+		panic(err)
+	}
+
+	return &cfg
+}
+
+func envConfigPath() string {
 	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
@@ -46,13 +72,7 @@ func MustLoad() *Config {
 		panic(err)
 	}
 
-	var cfg Config
-
-	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
-		panic(err)
-	}
-
-	return &cfg
+	return configPath
 }
 
 func InitLogger(env string) *slog.Logger {
