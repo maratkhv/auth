@@ -1,0 +1,7 @@
+env: "dev"
+postgresConnString: "postgresql://auth:strongpwd@db:5432/authdb"
+server:
+  port: "8082"
+  timeout: 1h
+redis: 
+  addr: "redis:6379"
