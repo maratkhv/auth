@@ -23,7 +23,7 @@ services:
     image: "postgres:alpine"
     environment:
       POSTGRES_USER: "auth"
-      POSTGRES_PASSWORD: "strongpwd"
+      POSTGRES_PASSWORD: "pwd"
       POSTGRES_DB: "authdb"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U auth -d authdb"]
@@ -32,6 +32,8 @@ services:
     networks:
       - app
       - migrations
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   redis:
     image: "redis:alpine"
@@ -57,9 +59,10 @@ services:
 networks:
   app:
     driver: bridge
-    driver_opts:
-      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
   migrations:
     driver: bridge
-    driver_opts:
-      com.docker.network.bridge.host_binding_ipv4: "127.0.0.2"
+
+volumes:
+  pgdata:
+
+# TODO: add profile for test service

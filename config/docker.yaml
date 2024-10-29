@@ -1,5 +1,5 @@
 env: "dev"
-postgresConnString: "postgresql://auth:strongpwd@db:5432/authdb"
+postgresConnString: "postgresql://auth:pwd@db:5432/authdb"
 server:
   port: "8082"
   timeout: 1h
