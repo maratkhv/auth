@@ -40,7 +40,8 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "redis-cli", "ping"]
       interval: 5s
-      timeout: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - app
 
