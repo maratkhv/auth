@@ -27,8 +27,9 @@ services:
       POSTGRES_DB: "authdb"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U auth -d authdb"]
-      interval: 10s
-      timeout: 15s
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - app
       - migrations
@@ -41,7 +42,6 @@ services:
       test: ["CMD-SHELL", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
-      retries: 5
     networks:
       - app
 
