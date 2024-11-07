@@ -18,10 +18,10 @@ var (
 	ErrRedis = errors.New("redis error")
 )
 
-func MustNew(dbConnStr string, redisPort string) Storage {
+func MustNew(dbConnStr string, redisAddr string) Storage {
 	return Storage{
 		db:    postgres.New(dbConnStr),
-		cache: redis.New(redisPort),
+		cache: redis.New(redisAddr),
 	}
 }
 
@@ -52,6 +52,10 @@ func (s Storage) GetUser(ctx context.Context, login string) (*models.User, error
 	u, err := s.db.GetUser(login)
 	if err != nil {
 		return nil, err
+	}
+
+	if err := s.cache.SaveUser(u); err != nil {
+		return u, fmt.Errorf("%w: %w", ErrRedis, err)
 	}
 
 	return u, e

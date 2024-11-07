@@ -9,3 +9,9 @@ migrations-run:
 
 migrations-run-with-jq:
 	go run ./cmd/migrations | jq
+
+bench:
+	go test -bench=. -count=5 ./tests
+
+test:
+	go test -v ./...

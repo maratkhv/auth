@@ -1,5 +1,7 @@
 package auth
 
+//go:generate mockgen -destination ../../../tests/mocks/auth_mock.go -package mocks auth/internal/services/auth UserProvider,UserSaver
+
 import (
 	"auth/internal/lib/jwt"
 	"auth/internal/models"
@@ -22,6 +24,8 @@ type Auth struct {
 var (
 	ErrWrongPassword = errors.New("wrong password")
 )
+
+const HashCost = bcrypt.MinCost
 
 type UserProvider interface {
 	GetUser(ctx context.Context, login string) (*models.User, error)
@@ -67,7 +71,7 @@ func (a *Auth) Login(ctx context.Context, login string, password string) (token 
 }
 
 func (a *Auth) Register(ctx context.Context, login string, password string) (id int64, err error) {
-	passHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	passHash, err := bcrypt.GenerateFromPassword([]byte(password), HashCost)
 	if err != nil {
 		a.log.Error("error generating hash from password", slog.Any("error", err))
 		return 0, fmt.Errorf("failed to hash password: %w", err)

@@ -1,0 +1,10 @@
+FROM golang:1.23-alpine
+WORKDIR /auth_migrations
+COPY ./embeds.go ./go.mod ./go.sum .env .
+COPY ./internal/config ./internal/config
+COPY ./cmd/migrations ./cmd/migrations
+COPY ./config ./config
+COPY ./migrations ./migrations
+RUN go mod download
+RUN go build -o /bin/migrations ./cmd/migrations
+ENTRYPOINT [ "/bin/migrations" ]
