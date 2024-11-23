@@ -5,6 +5,7 @@ COPY ./internal/config ./internal/config
 COPY ./cmd/migrations ./cmd/migrations
 COPY ./config ./config
 COPY ./migrations ./migrations
+COPY ./protobuf/generated ./protobuf/generated
 RUN go mod download
 RUN go build -o /bin/migrations ./cmd/migrations
 ENTRYPOINT [ "/bin/migrations" ]

@@ -4,6 +4,7 @@ COPY .env go.mod go.sum embeds.go .
 COPY ./cmd/auth ./cmd/auth
 COPY ./internal ./internal
 COPY ./config ./config
+COPY ./protobuf/generated ./protobuf/generated
 RUN go mod download
 RUN go build -o /bin/auth ./cmd/auth
 ENTRYPOINT [ "/bin/auth" ]

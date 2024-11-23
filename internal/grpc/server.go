@@ -5,7 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/maratkhv/protobuf/generated/auth/v1"
+	"auth/protobuf/generated/auth/v1"
+
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

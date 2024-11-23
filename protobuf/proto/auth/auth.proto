@@ -1,0 +1,42 @@
+syntax="proto3";
+
+package auth;
+
+option go_package = "/auth/v1;auth";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service Auth {
+    rpc Register(RegisterRequest) returns (RegisterResponse);
+    rpc Login(LoginRequest) returns (LoginResponse);
+    rpc GetPublicKey(GetPublicKeyRequest) returns (GetPublicKeyResponse);
+}
+
+message RegisterRequest {
+    string login = 1;
+    string password = 2;
+}
+
+message RegisterResponse {
+    int64 id = 1;
+}
+
+message LoginRequest {
+    string login = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    string token = 1;
+    google.protobuf.Timestamp pub_key_since = 2;
+}
+
+message GetPublicKeyRequest {
+    google.protobuf.Empty empty = 1;
+}
+
+message GetPublicKeyResponse {
+    bytes pub_key = 1;
+    google.protobuf.Timestamp created_at = 2;
+}
